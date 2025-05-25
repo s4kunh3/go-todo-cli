@@ -46,12 +46,15 @@ func showTasks() {
 		fmt.Println("No tasks found.")
 		return
 	}
+	fmt.Printf("%-4s | %-20s | %-10s\n", "ID", "Task Name", "Status")
+	fmt.Println("----------------------------------------------")
+	defer fmt.Println("----------------------------------------------")
 	for _, task := range tasks {
 		status := "Incomplete"
 		if task.Done {
 			status = "Complete"
 		}
-		fmt.Printf("[%d] %s %s\n", task.ID, task.Name, status)
+		fmt.Printf("[%-1d] | %-20s | %-10s\n", task.ID, task.Name, status)
 	}
 }
 
