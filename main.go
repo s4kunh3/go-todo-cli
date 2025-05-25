@@ -54,7 +54,7 @@ func showTasks() {
 		if task.Done {
 			status = "Complete"
 		}
-		fmt.Printf("[%-1d] | %-20s | %-10s\n", task.ID, task.Name, status)
+		fmt.Printf("[%-1d]  | %-20s | %-10s\n", task.ID, task.Name, status)
 	}
 }
 
