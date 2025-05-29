@@ -33,9 +33,16 @@ var nextID = 1 //Handle the next task id by brute force
 
 func createTask(reader *bufio.Reader) {
 	fmt.Print("Enter task name: ")
-	name, _ := reader.ReadString('\n')
+	name, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error reading input:", err)
+		return
+	}
 	name = strings.TrimSpace(name)
-
+	if name == "" {
+		fmt.Println("Task name cannot be empty.")
+		return
+	}
 	tasks = append(tasks, Task{ID: nextID, Name: name})
 	nextID++
 	fmt.Println("Task added!")
@@ -60,9 +67,16 @@ func showTasks() {
 
 func completeTask(reader *bufio.Reader) {
 	fmt.Println("Enter task ID to mark as complete: ")
-	input, _ := reader.ReadString('\n')
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error reading input:", err)
+		return
+	}
 	input = strings.TrimSpace(input)
-
+	if input == "" {
+		fmt.Println("Task ID cannot be empty.")
+		return
+	}
 	id, err := strconv.Atoi(input)
 	if err != nil {
 		fmt.Println("Invalid ID")
@@ -80,9 +94,16 @@ func completeTask(reader *bufio.Reader) {
 
 func deleteTask(reader *bufio.Reader) {
 	fmt.Print("Enter task ID to delete: ")
-	input, _ := reader.ReadString('\n')
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Error reading input:", err)
+		return
+	}
 	input = strings.TrimSpace(input)
-
+	if input == "" {
+		fmt.Println("Task ID cannot be empty.")
+		return
+	}
 	id, err := strconv.Atoi(input)
 	if err != nil {
 		fmt.Println("Invalid ID")
@@ -158,6 +179,7 @@ func main() {
 		case 4:
 			deleteTask(reader)
 		case 5:
+			defer fmt.Println("Exiting...")
 			return
 		}
 
