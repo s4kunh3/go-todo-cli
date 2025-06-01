@@ -16,9 +16,7 @@ type Task struct {
 	Done bool
 }
 
-// TODO: find better way to handle next id
 var tasks []Task
-var nextID = 1 //Handle the next task id by brute force
 
 /*
 	Method I used for secure user input handling (begginer way)
@@ -31,6 +29,17 @@ var nextID = 1 //Handle the next task id by brute force
 	If you (the reader) knows a better way pls tell me, i wanna know.
 */
 
+func getID() int {
+	nextID := 0
+	for _, task := range tasks {
+		if task.ID > nextID {
+			nextID = task.ID
+		}
+	}
+	return nextID + 1
+}
+
+//TODO: Add input validation
 func createTask(reader *bufio.Reader) {
 	fmt.Print("Enter task name: ")
 	name, err := reader.ReadString('\n')
@@ -43,8 +52,7 @@ func createTask(reader *bufio.Reader) {
 		fmt.Println("Task name cannot be empty.")
 		return
 	}
-	tasks = append(tasks, Task{ID: nextID, Name: name})
-	nextID++
+	tasks = append(tasks, Task{ID: getID(), Name: name})
 	fmt.Println("Task added!")
 }
 
@@ -136,16 +144,10 @@ func loadTasks() error {
 	if err != nil {
 		return err
 	}
-	maxID := 0
-	for _, task := range tasks {
-		if task.ID > maxID {
-			maxID = task.ID
-		}
-	}
-	nextID = maxID + 1
 	return nil
 }
 
+//TODO: Add a function to edit tasks
 func main() {
 	err := loadTasks()
 	if err != nil {
