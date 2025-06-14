@@ -29,17 +29,7 @@ var tasks []Task
 	If you (the reader) knows a better way pls tell me, i wanna know.
 */
 
-func getID() int {
-	nextID := 0
-	for _, task := range tasks {
-		if task.ID > nextID {
-			nextID = task.ID
-		}
-	}
-	return nextID + 1
-}
-
-//TODO: Add input validation
+// TODO: Add input validation
 func createTask(reader *bufio.Reader) {
 	fmt.Print("Enter task name: ")
 	name, err := reader.ReadString('\n')
@@ -69,7 +59,14 @@ func showTasks() {
 		if task.Done {
 			status = "Complete"
 		}
-		fmt.Printf("[%-1d]  | %-20s | %-10s\n", task.ID, task.Name, status)
+		wrappedName := wrapText(task.Name, 20)
+		for i, line := range wrappedName {
+			if i == 0 {
+				fmt.Printf("[%-1d]  | %-20s | %-10s\n", task.ID, line, status)
+			} else {
+				fmt.Printf("     | %-20s |\n", line)
+			}
+		}
 	}
 }
 
@@ -147,7 +144,7 @@ func loadTasks() error {
 	return nil
 }
 
-//TODO: Add a function to edit tasks
+// TODO: Add a function to edit tasks
 func main() {
 	err := loadTasks()
 	if err != nil {
