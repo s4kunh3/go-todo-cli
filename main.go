@@ -8,12 +8,14 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+	"time"
 )
 
 type Task struct {
-	ID   int
-	Name string
-	Done bool
+	ID      int
+	Name    string
+	Done    bool
+	DueTime time.Time
 }
 
 var tasks []Task
@@ -42,7 +44,23 @@ func createTask(reader *bufio.Reader) {
 		fmt.Println("Task name cannot be empty.")
 		return
 	}
-	tasks = append(tasks, Task{ID: getID(), Name: name})
+	fmt.Print("Enter due time (YYYY-MM-DD HH:MM) or press Enter to skip: ")
+	dueDate, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println("Error reading due time: ", err)
+		return
+	}
+	dueDate = strings.TrimSpace(dueDate)
+
+	var parsedDate time.Time
+	if dueDate != "" {
+		layout := "2006-01-02 15:04"
+		parsedDate, err = time.Parse(layout, dueDate)
+		if err != nil {
+			fmt.Println("Invalid date format. Please use YYYY-MM-DD HH:MM.")
+		}
+	}
+	tasks = append(tasks, Task{ID: getID(), Name: name, DueTime: parsedDate})
 	fmt.Println("Task added!")
 }
 
@@ -51,9 +69,9 @@ func showTasks() {
 		fmt.Println("No tasks found.")
 		return
 	}
-	fmt.Printf("%-4s | %-20s | %-10s\n", "ID", "Task Name", "Status")
-	fmt.Println("----------------------------------------------")
-	defer fmt.Println("----------------------------------------------")
+	fmt.Printf("%-4s | %-20s | %-10s | %-16s\n", "ID", "Task Name", "Status", "Due Time")
+	fmt.Println("----------------------------------------------------------------")
+	defer fmt.Println("----------------------------------------------------------------")
 	for _, task := range tasks {
 		status := "Incomplete"
 		if task.Done {
@@ -62,7 +80,11 @@ func showTasks() {
 		wrappedName := wrapText(task.Name, 20)
 		for i, line := range wrappedName {
 			if i == 0 {
-				fmt.Printf("[%-1d]  | %-20s | %-10s\n", task.ID, line, status)
+				due := "-"
+				if !task.DueTime.IsZero() {
+					due = task.DueTime.Format("2006-01-02 15:04")
+				}
+				fmt.Printf("[%-1d]  | %-20s | %-10s | %-16s\n", task.ID, line, status, due)
 			} else {
 				fmt.Printf("     | %-20s |\n", line)
 			}
